@@ -7,24 +7,26 @@ class SimpleRemapper(
     val hierarchy: TypeHierarchyResolveVisitor
 ) : Remapper() {
     override fun map(typeName: String): String {
-        return mapping.find { it.classMapping.from.value == typeName }?.classMapping?.mapped?.replace('.','/') ?: typeName
+        val nTypeName = typeName.replace('/','.')
+        return mapping.find { it.classMapping.from.value == nTypeName }?.classMapping?.mapped?.replace('.','/') ?: typeName
     }
 
     override fun mapFieldName(owner: String, name: String, desc: String): String {
-        val clazz = mapping.find { it.classMapping.from.value == owner } ?: return name
-        val field = clazz.fieldMappings.find { it.from.type.value == desc && it.from.name == name }?.mapped
+        val nOwner = owner.replace('/','/')
+        val nDesc = desc.replace('/','.')
+        val clazz = mapping.find { it.classMapping.from.value == nOwner } ?: return name
+        val field = clazz.fieldMappings.find { it.from.type.value == nDesc && it.from.name == name }?.mapped
         return field ?: name
     }
 
     override fun mapMethodName(owner: String, name: String, desc: String): String {
-        if(owner == "czq"){
-            println("$owner  $name  $desc")
-        }
-        val clazz = mapping.find { it.classMapping.from.value == owner } ?: return name
+        val nOwner = owner.replace('/','.')
+        val nDesc = desc.replace('/','.')
+        val clazz = mapping.find { it.classMapping.from.value == nOwner } ?: return name
         val method = run {
             for (c in hierarchy.getAllSuperClass(clazz.classMapping.from)) {
                 val cMapping = mapping.find { it.classMapping.from == c } ?: continue
-                val found = findMethod(cMapping, desc, name)
+                val found = findMethod(cMapping, nDesc, name)
                 if (found != null) return@run found
             }
             return@run null

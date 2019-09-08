@@ -4,11 +4,14 @@ import java.net.URL
 
 fun parseMapping(url: URL): Set<ClassMapping> {
     val mappings = HashSet<ClassMapping>()
-    val content = url.readText().lines()
     var type: Mapping<ClassInfo>? = null
     var field: MutableSet<Mapping<FieldInfo>>? = null
     var method: MutableSet<Mapping<MethodInfo>>? = null
 
+    println("Read mapping file from url")
+    val content = url.readText().lines()
+
+    println("Parse mapping file")
     var line = 0
     while(line < content.size){
         val current = content[line++]
@@ -41,5 +44,6 @@ fun parseMapping(url: URL): Set<ClassMapping> {
             throw Exception("Exception on parsing: $current", e)
         }
     }
+    println("Total ${mappings.size} class mapping found")
     return mappings
 }

@@ -18,18 +18,12 @@ class App : CliktCommand() {
     val thread: Int by option().int().default(8)
 
     override fun run() {
-        val mapping = if (reobf) parseMapping(mapping) else parseMapping(mapping).map { map ->
-            ClassMapping(
-                Mapping(ClassInfo(map.classMapping.mapped), map.classMapping.from.value),
-                map.fieldMappings.map { Mapping(FieldInfo(it.from.type, it.mapped), it.from.name) }.toSet(),
-                map.methodMappings.map { Mapping(MethodInfo(it.from.returnType, it.from.parameters, it.mapped), it.from.name) }.toSet()
-            )
-        }.toSet()
+        val mapping = if (reobf) parseMapping(mapping) else reverseMapping(parseMapping(mapping))
 
         val hierarchy = TypeHierarchyResolveVisitor()
         hierarchy.visitAll(input)
 
-        applyMapping(input, output, mapping, hierarchy)
+        applyMapping(input, output, mapping, hierarchy, thread)
     }
 }
 

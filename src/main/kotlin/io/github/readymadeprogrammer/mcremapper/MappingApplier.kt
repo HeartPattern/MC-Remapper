@@ -19,11 +19,12 @@ fun applyMapping(
     input: File,
     output: File,
     mapping: Set<ClassMapping>,
-    hierarchy: TypeHierarchyResolveVisitor
+    hierarchy: TypeHierarchyResolveVisitor,
+    thread: Int
 ) {
     val process = ThreadPoolExecutor(
-        8,
-        16,
+        thread,
+        thread,
         60,
         TimeUnit.SECONDS,
         LinkedBlockingQueue()
@@ -40,6 +41,8 @@ fun applyMapping(
 
     val resultQueue = LinkedBlockingQueue<Pair<ZipEntry, ByteArray>>()
 
+    println("Read from input file")
+
     for (entry in zipInput.entries()) {
         if (entry.name.endsWith(".class")) {
             val bytes = zipInput.getInputStream(entry).readAllBytes()
@@ -47,7 +50,7 @@ fun applyMapping(
             process.execute {
                 val reader = ClassReader(bytes)
                 val classNode = ClassNode()
-                val classRemapper = ClassRemapper(classNode, SimpleRemapper(mapping, hierarchy))
+                val classRemapper = InnerClassRemapper(classNode, SimpleRemapper(mapping, hierarchy))
                 reader.accept(classRemapper, ClassReader.EXPAND_FRAMES)
                 val writer = ClassWriter(0)
                 classNode.accept(writer)
@@ -67,9 +70,12 @@ fun applyMapping(
     zipInput.close()
 
     while(totalSize.sum() != processedSize.sum()){
-        println("${processedSize.sum()}/${totalSize.sum()}")
+        println("Apply mappings... (${processedSize.sum()}/${totalSize.sum()})")
         Thread.sleep(1000)
     }
+    println("Apply mappings... (${processedSize.sum()}/${totalSize.sum()})")
+
+    println("Write to output file")
     while(resultQueue.isNotEmpty()){
         val (entry, bytes) = resultQueue.poll()
         zipOutput.putNextEntry(entry)
