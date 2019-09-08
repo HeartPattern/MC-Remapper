@@ -46,9 +46,10 @@ Path to input jar file. Input jar can be minecraft client(`.minecraft/versions/$
 
 Path to output file. If file is already exists in path, that wil be erased.
 
+### --thread (Optional, Default=8)
+Number of thread used for apply mapping to class.
 
-
-### --reobf
+### --reobf (Optional)
 
 Reobf option reverse mapping direction. By default, MC-Remapper map obfuscated code to deobfuscated code. But if you write your mod/plugin with deobfuscated minecraft source and apply it to forge/bukkit, minecraft will crash with NoClassDefFoundException, NoSuchMethodException, or else. That's because, forge or bukkit use obfuscated code but your plugin tried to access to deobfuscated code. In this case, you have to re-obfuscate your mod/plugin to use obfuscated minecraft code. You can use this option to map deobfuscated to. obfuscated code.
 
@@ -57,6 +58,6 @@ Reobf option reverse mapping direction. By default, MC-Remapper map obfuscated c
 ## Example usage
 
 ```
-./MC-Remapper --mapping https://launcher.mojang.com/v1/objects/448ccb7b455f156bb5cb9cdadd7f96cd68134dbd/server.txt --input server.jar --output deobf.jar
+./MC-Remapper --mapping https://launcher.mojang.com/v1/objects/448ccb7b455f156bb5cb9cdadd7f96cd68134dbd/server.txt --input server.jar --output deobf.jar --thread 8
 ```
 
