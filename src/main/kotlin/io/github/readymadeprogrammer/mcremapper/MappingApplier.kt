@@ -45,7 +45,7 @@ fun applyMapping(
 
     for (entry in zipInput.entries()) {
         if (entry.name.endsWith(".class")) {
-            val bytes = zipInput.getInputStream(entry).readAllBytes()
+            val bytes = zipInput.getInputStream(entry).readBytes()
             totalSize.increment()
             process.execute {
                 val reader = ClassReader(bytes)

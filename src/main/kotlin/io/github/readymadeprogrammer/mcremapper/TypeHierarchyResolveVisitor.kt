@@ -18,7 +18,7 @@ class TypeHierarchyResolveVisitor() : ClassVisitor(Opcodes.ASM5) {
         val zipFile = ZipFile(file)
         for(entry in zipFile.entries()){
             if(!entry.name.endsWith(".class")) continue
-            val bytes = zipFile.getInputStream(entry).readAllBytes()
+            val bytes = zipFile.getInputStream(entry).readBytes()
             val reader = ClassReader(bytes)
             reader.accept(this, ClassReader.EXPAND_FRAMES)
         }
