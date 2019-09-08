@@ -5,15 +5,17 @@ import org.junit.Test
 
 class RunTest(){
     @Test
-    @Ignore
+//    @Ignore
     fun runTest(){
         main(arrayOf(
             "--mapping",
-            "https://launcher.mojang.com/v1/objects/448ccb7b455f156bb5cb9cdadd7f96cd68134dbd/server.txt",
+            "https://launcher.mojang.com/v1/objects/c0c8ef5131b7beef2317e6ad80ebcd68c4fb60fa/client.txt",
             "--input",
-            "server.jar",
+            "1.14.4.jar",
             "--output",
-            "deobf.jar"
+            "deobf.jar",
+            "--thread",
+            "8"
         ))
     }
 }

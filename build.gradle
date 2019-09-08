@@ -15,6 +15,9 @@ dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
     implementation 'com.github.ajalt:clikt:2.1.0'
     implementation 'org.ow2.asm:asm-all:5.2'
+    implementation 'com.google.guava:guava:28.1-jre'
+
+
 }
 
 application {

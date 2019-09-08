@@ -1,45 +1,43 @@
 package io.github.readymadeprogrammer.mcremapper
 
-import io.github.readymadeprogrammer.mcremapper.mapping.ClassMapping
-import io.github.readymadeprogrammer.mcremapper.mapping.FieldSignature
-import io.github.readymadeprogrammer.mcremapper.mapping.TypeSignature
-import io.github.readymadeprogrammer.mcremapper.mapping.parseMethodDescriptor
-import org.objectweb.asm.ClassVisitor
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.commons.Remapper
-import java.util.*
 
-class SimpleRemapper(val mapping: Map<String, ClassMapping>) : Remapper() {
-    val hierarchy = HashMap<String, ClassHierarchy>()
-    val hierarchyReader = SimpleHierarchyReader()
-    inner class SimpleHierarchyReader : ClassVisitor(Opcodes.ASM5) {
-        override fun visit(version: Int, access: Int, name: String, signature: String?, superName: String?, interfaces: Array<out String>?) {
-            hierarchy[name] = ClassHierarchy(superName, interfaces)
+class SimpleRemapper(
+    val mapping: Set<ClassMapping>,
+    val hierarchy: TypeHierarchyResolveVisitor
+) : Remapper() {
+    override fun map(typeName: String): String {
+        return mapping.find { it.classMapping.from.value == typeName }?.classMapping?.mapped?.replace('.','/') ?: typeName
+    }
+
+    override fun mapFieldName(owner: String, name: String, desc: String): String {
+        val clazz = mapping.find { it.classMapping.from.value == owner } ?: return name
+        val field = clazz.fieldMappings.find { it.from.type.value == desc && it.from.name == name }?.mapped
+        return field ?: name
+    }
+
+    override fun mapMethodName(owner: String, name: String, desc: String): String {
+        if(owner == "czq"){
+            println("$owner  $name  $desc")
         }
+        val clazz = mapping.find { it.classMapping.from.value == owner } ?: return name
+        val method = run {
+            for (c in hierarchy.getAllSuperClass(clazz.classMapping.from)) {
+                val cMapping = mapping.find { it.classMapping.from == c } ?: continue
+                val found = findMethod(cMapping, desc, name)
+                if (found != null) return@run found
+            }
+            return@run null
+        }
+        return method ?: name
     }
 
-    override fun map(typeName: String): String? = (mapping[typeName]?.type?.second?.replace('.','/') ?: typeName)
-
-    override fun mapFieldName(owner: String, name: String, desc: String): String? {
-        mapping[owner]
-            ?.let { it.field[FieldSignature(TypeSignature(desc), name)] }
-            ?.let { return it }
-        hierarchy[owner]?.superName?.let { return mapFieldName(it, name, desc) }
-        return name
-    }
-
-    override fun mapMethodName(owner: String, name: String, desc: String) =
-        mapMethodNameInternal(owner, name, desc) ?: name
-
-    private fun mapMethodNameInternal(owner: String, name: String, desc: String): String? {
-        mapping[owner]?.let { it.method[parseMethodDescriptor(desc, name)] }?.let { return it }
-        val h = hierarchy[owner] ?: return null
-        if (h.superName != null) mapMethodNameInternal(h.superName, name, desc)?.let { return it }
-        if (h.interfaces != null) for (interfaceName in h.interfaces) {
-            mapMethodNameInternal(interfaceName, name, desc)?.let { return it }
+    private fun findMethod(mapping: ClassMapping, desc: String, name: String): String? {
+        for (method in mapping.methodMappings) {
+            if (method.from.toMethodDescriptor() == desc && method.from.name == name) {
+                return method.mapped
+            }
         }
         return null
     }
 }
-
-class ClassHierarchy(val superName: String?, val interfaces: Array<out String>?)
