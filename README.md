@@ -1,6 +1,6 @@
 # !Important
 
-MC-Remapper is not working for now. It only map class and package correctly, and cannot map field, method, and inner class. For now, use only for test.
+MC-Remapper is not tested. Do not trust it.
 
 # MC-Remapper
 
