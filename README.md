@@ -44,7 +44,7 @@ Path to input jar file. Input jar can be minecraft client(`.minecraft/versions/$
 
 ### --output
 
-Path to output file. If file is already exists in path, that wil be erased.
+Path to output file. If file is already exists in path, that will be erased.
 
 ### --thread (Optional, Default=8)
 Number of thread used for apply mapping to class.
