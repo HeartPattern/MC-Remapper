@@ -5,7 +5,7 @@ import org.junit.Test
 
 class RunTest(){
     @Test
-//    @Ignore
+    @Ignore
     fun runTest(){
         main(arrayOf(
             "--mapping",
