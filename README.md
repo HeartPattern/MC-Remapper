@@ -15,7 +15,7 @@ Clone project to your local machine and open terminal in directory where build.g
 Run following command to compile.
 
 ```
-./gradlew installZip
+./gradlew installDist
 ```
 
 Runnable script and runtime libraries will generate under `build/install/MC-Remapper`.
