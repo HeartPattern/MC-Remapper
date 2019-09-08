@@ -6,6 +6,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.int
 import java.io.File
 import java.net.URL
+import kotlin.system.exitProcess
 
 class App : CliktCommand() {
     val mapping: URL by option().convert {
@@ -24,6 +25,8 @@ class App : CliktCommand() {
         hierarchy.visitAll(input)
 
         applyMapping(input, output, mapping, hierarchy, thread)
+        println("Complete")
+        exitProcess(0)
     }
 }
 
