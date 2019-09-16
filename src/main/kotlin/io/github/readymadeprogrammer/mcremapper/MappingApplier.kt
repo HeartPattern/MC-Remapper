@@ -49,7 +49,7 @@ fun applyMapping(
             process.execute {
                 val reader = ClassReader(bytes)
                 val classNode = ClassNode()
-                val classRemapper = InnerClassRemapper(classNode, SimpleRemapper(mapping, hierarchy))
+                val classRemapper = SimpleClassRemapper(classNode, SimpleRemapper(mapping, hierarchy))
                 reader.accept(classRemapper, ClassReader.EXPAND_FRAMES)
                 val writer = ClassWriter(0)
                 classNode.accept(writer)

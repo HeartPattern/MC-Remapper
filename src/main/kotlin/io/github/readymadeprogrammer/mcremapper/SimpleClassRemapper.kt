@@ -5,7 +5,7 @@ import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.commons.Remapper
 
 // Also remap inner class name
-class InnerClassRemapper(cv: ClassVisitor, remapper: Remapper) : ClassRemapper(cv, remapper) {
+class SimpleClassRemapper(cv: ClassVisitor, remapper: Remapper) : ClassRemapper(cv, remapper) {
     override fun visitInnerClass(name: String, outerName: String?, innerName: String?, access: Int) {
         if (outerName == null || innerName == null)
             super.visitInnerClass(name, outerName, innerName, access)
