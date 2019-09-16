@@ -13,23 +13,23 @@ fun parseMapping(url: URL): Set<ClassMapping> {
 
     println("Parse mapping file")
     var line = 0
-    while(line < content.size){
+    while (line < content.size) {
         val current = content[line++]
 
-        if(current.isBlank() || current.trim().startsWith('#'))
+        if (current.isBlank() || current.trim().startsWith('#'))
             continue
 
-        try{
-            if(current[0].isWhitespace()){ // Field or Method
-                if(current.trim().first().isDigit()){ //Method
+        try {
+            if (current[0].isWhitespace()) { // Field or Method
+                if (current.contains('(')) { //Method
                     val parsed = parseMethodMapping(current.trim())
                     method!! += parsed
                 } else { //Field
                     val parsed = parseFieldMapping(current.trim())
                     field!! += parsed
                 }
-            } else{ //Class
-                if(type!=null){
+            } else { //Class
+                if (type != null) {
                     mappings += ClassMapping(
                         type,
                         field!!,
@@ -40,7 +40,7 @@ fun parseMapping(url: URL): Set<ClassMapping> {
                 field = HashSet()
                 method = HashSet()
             }
-        }catch(e: Exception){
+        } catch (e: Exception) {
             throw Exception("Exception on parsing: $current", e)
         }
     }

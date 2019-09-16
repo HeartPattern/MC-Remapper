@@ -1,8 +1,10 @@
 package io.github.readymadeprogrammer.mcremapper
+
 import java.util.regex.Pattern
 
 private val fieldRegex = Pattern.compile("(\\S+) (\\S+) -> (\\S+)")
-private val methodRegex = Pattern.compile("(\\d+):(\\d+):(\\S+) (\\S+)\\((\\S*)\\) -> (\\S+)")
+private val lineNumberMethodRegex = Pattern.compile("(\\d+):(\\d+):(\\S+) (\\S+)\\((\\S*)\\) -> (\\S+)")
+private val methodRegex = Pattern.compile("(\\S+) (\\S+)\\((\\S*)\\) -> (\\S+)")
 private val methodDescriptorRegex = Pattern.compile("\\((\\S*)\\)(\\S+)")
 private val classRegex = Pattern.compile("(\\S+) -> (\\S+):")
 
@@ -11,6 +13,7 @@ fun parseClassMapping(raw: String): Mapping<ClassInfo> {
     matcher.find()
     return Mapping(ClassInfo(matcher.group(1)), matcher.group(2))
 }
+
 fun parseFieldMapping(raw: String): Mapping<FieldInfo> {
     val matcher = fieldRegex.matcher(raw)
     matcher.find()
@@ -40,16 +43,31 @@ fun parseType(raw: String): TypeDescriptor {
 
 
 fun parseMethodMapping(raw: String): Mapping<MethodInfo> {
-    val matcher = methodRegex.matcher(raw)
-    matcher.find()
-    val arguments = if (matcher.group(5).isEmpty()) emptyList()
-    else matcher.group(5).split(',').map { parseType(it.trim()) }
-    return Mapping(
-        MethodInfo(
-            parseType(matcher.group(3)),
-            arguments,
-            matcher.group(4)),
-        matcher.group(6))
+    if (raw[0].isDigit()) {
+        val matcher = lineNumberMethodRegex.matcher(raw)
+        matcher.find()
+        val arguments = if (matcher.group(5).isEmpty()) emptyList()
+        else matcher.group(5).split(',').map { parseType(it.trim()) }
+        return Mapping(
+            MethodInfo(
+                parseType(matcher.group(3)),
+                arguments,
+                matcher.group(4)),
+            matcher.group(6))
+    } else {
+        val matcher = methodRegex.matcher(raw)
+        matcher.find()
+        val arguments = if (matcher.group(3).isEmpty()) emptyList()
+        else matcher.group(3).split(',').map { parseType(it.trim()) }
+        return Mapping(
+            MethodInfo(
+                parseType(matcher.group(1)),
+                arguments,
+                matcher.group(2)
+            ),
+            matcher.group(4)
+        )
+    }
 }
 
 private fun parseNext(iterator: Iterator<Char>): String {

@@ -2,7 +2,6 @@ package io.github.readymadeprogrammer.mcremapper
 
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.tree.ClassNode
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -55,13 +54,12 @@ fun applyMapping(
                 val writer = ClassWriter(0)
                 classNode.accept(writer)
                 resultQueue.add(
-                    ZipEntry("${classNode.name.replace('.','/')}.class")
+                    ZipEntry("${classNode.name.replace('.', '/')}.class")
                         to writer.toByteArray()
                 )
                 processedSize.increment()
             }
-        }
-        else{
+        } else {
             zipOutput.putNextEntry(ZipEntry(entry.name))
             ByteArrayInputStream(zipInput.getInputStream(entry).readBytes()).copyTo(zipOutput)
             zipOutput.closeEntry()
@@ -69,14 +67,14 @@ fun applyMapping(
     }
     zipInput.close()
 
-    while(totalSize.sum() != processedSize.sum()){
+    while (totalSize.sum() != processedSize.sum()) {
         println("Apply mappings... (${processedSize.sum()}/${totalSize.sum()})")
         Thread.sleep(1000)
     }
     println("Apply mappings... (${processedSize.sum()}/${totalSize.sum()})")
 
     println("Write to output file")
-    while(resultQueue.isNotEmpty()){
+    while (resultQueue.isNotEmpty()) {
         val (entry, bytes) = resultQueue.poll()
         zipOutput.putNextEntry(entry)
         zipOutput.write(bytes)

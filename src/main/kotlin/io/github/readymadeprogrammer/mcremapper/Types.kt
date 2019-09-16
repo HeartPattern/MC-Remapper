@@ -17,6 +17,6 @@ data class ClassMapping(
     val methodMappings: Set<Mapping<MethodInfo>>
 )
 
-fun MethodInfo.toMethodDescriptor(): String{
-    return "(${parameters.joinToString(separator = ""){it.value}})${returnType.value}"
+fun MethodInfo.toMethodDescriptor(): String {
+    return "(${parameters.joinToString(separator = "") { it.value }})${returnType.value}"
 }

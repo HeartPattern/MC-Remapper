@@ -6,22 +6,31 @@ class SimpleRemapper(
     val mapping: Set<ClassMapping>,
     val hierarchy: TypeHierarchyResolveVisitor
 ) : Remapper() {
+    private var count = 0
     override fun map(typeName: String): String {
-        val nTypeName = typeName.replace('/','.')
-        return mapping.find { it.classMapping.from.value == nTypeName }?.classMapping?.mapped?.replace('.','/') ?: typeName
+        val nTypeName = typeName.replace('/', '.')
+        return mapping.find { it.classMapping.from.value == nTypeName }?.classMapping?.mapped?.replace('.', '/')
+            ?: typeName
     }
 
     override fun mapFieldName(owner: String, name: String, desc: String): String {
-        val nOwner = owner.replace('/','/')
-        val nDesc = desc.replace('/','.')
+        val nOwner = owner.replace('/', '.')
+        val nDesc = desc.replace('/', '.')
         val clazz = mapping.find { it.classMapping.from.value == nOwner } ?: return name
-        val field = clazz.fieldMappings.find { it.from.type.value == nDesc && it.from.name == name }?.mapped
+        val field = run {
+            for (c in hierarchy.getAllSuperClass(clazz.classMapping.from)) {
+                val cMapping = mapping.find { it.classMapping.from == c } ?: continue
+                val found = findField(cMapping, name, nDesc)
+                if (found != null) return@run found
+            }
+            return@run null
+        }
         return field ?: name
     }
 
     override fun mapMethodName(owner: String, name: String, desc: String): String {
-        val nOwner = owner.replace('/','.')
-        val nDesc = desc.replace('/','.')
+        val nOwner = owner.replace('/', '.')
+        val nDesc = desc.replace('/', '.')
         val clazz = mapping.find { it.classMapping.from.value == nOwner } ?: return name
         val method = run {
             for (c in hierarchy.getAllSuperClass(clazz.classMapping.from)) {
@@ -38,6 +47,15 @@ class SimpleRemapper(
         for (method in mapping.methodMappings) {
             if (method.from.toMethodDescriptor() == desc && method.from.name == name) {
                 return method.mapped
+            }
+        }
+        return null
+    }
+
+    private fun findField(mapping: ClassMapping, name: String, desc: String): String? {
+        for (field in mapping.fieldMappings) {
+            if (field.from.type.value == desc && field.from.name == name) {
+                return field.mapped
             }
         }
         return null
