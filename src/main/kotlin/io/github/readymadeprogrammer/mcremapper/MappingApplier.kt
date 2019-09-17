@@ -15,15 +15,12 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 fun applyMapping(
-    input: File,
-    output: File,
     mapping: Set<ClassMapping>,
-    hierarchy: TypeHierarchyResolveVisitor,
-    thread: Int
+    hierarchy: TypeHierarchyResolveVisitor
 ) {
     val process = ThreadPoolExecutor(
-        thread,
-        thread,
+        app.thread,
+        app.thread,
         60,
         TimeUnit.SECONDS,
         LinkedBlockingQueue()
@@ -32,9 +29,9 @@ fun applyMapping(
     val totalSize = LongAdder()
     val processedSize = LongAdder()
 
-    val zipInput = ZipFile(input)
-    val zipOutput = output.let {
-        if (output.exists()) output.delete()
+    val zipInput = ZipFile(app.input)
+    val zipOutput = app.output.let {
+        if (app.output.exists()) app.output.delete()
         ZipOutputStream(FileOutputStream(it))
     }
 

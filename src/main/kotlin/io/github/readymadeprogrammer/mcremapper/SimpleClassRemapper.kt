@@ -29,9 +29,19 @@ class SimpleClassRemapper(cv: ClassVisitor, remapper: Remapper) : ClassRemapper(
 
 class LocalVarFixMethodRemapper(mv: MethodVisitor, remapper: Remapper) : MethodRemapper(mv, remapper) {
     override fun visitLocalVariable(name: String?, desc: String?, signature: String?, start: Label?, end: Label?, index: Int) {
-        if (name != null && name == "\u2603");
-//            super.visitLocalVariable("debug$index", desc, signature, start, end, index)
-        else
+        if (name != null && name == "\u2603") {
+            if (app.fixLocalVar == LocalVarFixType.RENAME)
+                super.visitLocalVariable("debug$index", desc, signature, start, end, index)
+            else if (app.fixLocalVar == LocalVarFixType.NO_FIX)
+                super.visitLocalVariable(name, desc, signature, start, end, index)
+        } else {
             super.visitLocalVariable(name, desc, signature, start, end, index)
+        }
     }
+}
+
+enum class LocalVarFixType {
+    NO_FIX,
+    RENAME,
+    DELETE
 }
