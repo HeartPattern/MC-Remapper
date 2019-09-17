@@ -23,8 +23,8 @@ class TypeHierarchyResolveVisitor : ClassVisitor(Opcodes.ASM5) {
     }
 
     override fun visit(version: Int, access: Int, name: String, signature: String?, superName: String?, interfaces: Array<out String>?) {
-        if (superName != null) hierarchy.put(name, superName)
-        if (interfaces != null) hierarchy.putAll(name, interfaces.asIterable())
+        if (superName != null) hierarchy.put(name.replace('/','.'), superName.replace('/','.'))
+        if (interfaces != null) hierarchy.putAll(name.replace('/','.'), interfaces.map{it.replace('/','.')})
     }
 
     fun getAllSuperClass(classInfo: ClassInfo): Iterable<ClassInfo> = object : Iterable<ClassInfo> {
