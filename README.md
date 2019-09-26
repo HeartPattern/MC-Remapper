@@ -1,7 +1,3 @@
-# !Important
-
-MC-Remapper is not tested. Do not trust it.
-
 # MC-Remapper
 
 Deobfuscator for Minecraft
