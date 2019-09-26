@@ -6,7 +6,6 @@ class SimpleRemapper(
     val mapping: Set<ClassMapping>,
     val hierarchy: TypeHierarchyResolveVisitor
 ) : Remapper() {
-    private var count = 0
     override fun map(typeName: String): String {
         val nTypeName = typeName.replace('/', '.')
         return mapping.find { it.classMapping.from.value == nTypeName }?.classMapping?.mapped?.replace('.', '/')
