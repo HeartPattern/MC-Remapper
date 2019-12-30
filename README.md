@@ -66,6 +66,6 @@ Reobf option reverse mapping direction. By default, MC-Remapper map obfuscated c
 ## Example usage
 
 ```
-./MC-Remapper --mapping https://launcher.mojang.com/v1/objects/448ccb7b455f156bb5cb9cdadd7f96cd68134dbd/server.txt --input server.jar --output deobf.jar --thread 8 --fixlocalvar=delete
+./MC-Remapper --mapping https://launcher.mojang.com/v1/objects/448ccb7b455f156bb5cb9cdadd7f96cd68134dbd/server.txt --input server.jar --output deobf.jar --thread 8 --fixLocalVar=delete
 ```
 
