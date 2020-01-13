@@ -49,7 +49,7 @@ Path to output file. If file is already exists in path, that will be erased.
 ### --thread (Optional, Default=8)
 Number of thread used for apply mapping to class.
 
-### --fixLocalVar (Optional, Default=no)
+### --fixlocalvar (Optional, Default=no)
 Fix local variable name \u2603(☃). This variable name is declared multiple time in same scope, so some decompiler does not work. There are three options.
 
 |option|description|
@@ -66,6 +66,6 @@ Reobf option reverse mapping direction. By default, MC-Remapper map obfuscated c
 ## Example usage
 
 ```
-./MC-Remapper --mapping https://launcher.mojang.com/v1/objects/448ccb7b455f156bb5cb9cdadd7f96cd68134dbd/server.txt --input server.jar --output deobf.jar --thread 8 --fixLocalVar=delete
+./MC-Remapper --mapping https://launcher.mojang.com/v1/objects/448ccb7b455f156bb5cb9cdadd7f96cd68134dbd/server.txt --input server.jar --output deobf.jar --thread 8 --fixlocalvar=delete
 ```
 

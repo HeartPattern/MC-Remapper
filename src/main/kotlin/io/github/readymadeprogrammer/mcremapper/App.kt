@@ -20,7 +20,7 @@ class App : CliktCommand() {
     val output: File by option().file(exists = false).required()
     val reobf: Boolean by option().flag()
     val thread: Int by option().int().default(8)
-    val fixLocalVar: LocalVarFixType by option().choice("no", "rename", "delete").convert {
+    val fixlocalvar: LocalVarFixType by option().choice("no", "rename", "delete").convert {
         when (it) {
             "no" -> LocalVarFixType.NO_FIX
             "rename" -> LocalVarFixType.RENAME
