@@ -45,7 +45,7 @@ Path to output file. If file is already exists in path, that will be erased.
 ### --thread (Optional, Default=8)
 Number of thread used for apply mapping to class.
 
-### --fixLocalVar (Optional, Default=no)
+### --fixlocalvar (Optional, Default=no)
 Fix local variable name \u2603(☃). This variable name is declared multiple time in same scope, so some decompiler does not work. There are three options.
 
 |option|description|
