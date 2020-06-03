@@ -74,6 +74,7 @@ class MCRemapper(
         val outputExecutor = Executors.newSingleThreadExecutor()
 
         output.delete()
+        output.createNewFile()
 
         val zipInput = ZipFile(input)
         val zipOutput = ZipOutputStream(FileOutputStream(output))
