@@ -11,7 +11,8 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.int
-import io.heartpattern.mcremapper.MappingApplier
+import io.heartpattern.mcremapper.MCRemapper
+import io.heartpattern.mcremapper.download
 import io.heartpattern.mcremapper.model.LocalVariableFixType
 import io.heartpattern.mcremapper.parser.proguard.MappingsProguardParser
 import io.heartpattern.mcremapper.resolver.ClassVisitorSuperTypeResolver
@@ -99,10 +100,10 @@ class MCRemapperApp : CliktCommand() {
             .showSpeed()
             .build()
 
-        val applier = MappingApplier(
+        val applier = MCRemapper(
             mapping,
-            fixlocalvar,
-            superResolver
+            superResolver,
+            fixlocalvar
         )
 
         output.delete()
@@ -145,18 +146,6 @@ class MCRemapperApp : CliktCommand() {
         zipOutput.close()
         progress.close()
         println("Complete")
-    }
-
-    private fun URL.download(prefix: String): File {
-        val tempFile = File.createTempFile(prefix, null)
-        tempFile.outputStream().use { output ->
-            this.openStream().use { input ->
-                input.copyTo(output)
-            }
-        }
-
-        tempFile.deleteOnExit()
-        return tempFile
     }
 }
 
