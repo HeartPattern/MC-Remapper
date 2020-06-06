@@ -1,3 +1,4 @@
+![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fmaven.heartpattern.io%2Frepository%2Fmaven-public%2Fio%2Fheartpattern%2Fmcremapper%2Fmaven-metadata.xml) ![Jenkins](https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fjenkins.heartpattern.io%2Fjob%2FHeartPattern%2Fjob%2FMC-Remapper%2Fjob%2Fmaster%2F) ![GitHub top language](https://img.shields.io/github/languages/top/HeartPattern/MC-Remapper) ![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/HeartPattern/MC-Remapper) ![GitHub repo size](https://img.shields.io/github/repo-size/HeartPattern/MC-Remapper) ![GitHub](https://img.shields.io/github/license/HeartPattern/MC-Remapper) ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/HeartPattern/MC-Remapper) ![GitHub last commit](https://img.shields.io/github/last-commit/HeartPattern/MC-Remapper)
 # MC-Remapper
 
 Deobfuscator for Minecraft
