@@ -27,7 +27,7 @@ To run mc remapper with a specific file, you can provide input jar and mapping t
 
 Input jar is path to file or url of obfuscated minecraft client or server.
 
-Mapping txt is path to file or url of proguard's mapping txt file.  You can find it at '.minecraft/versions/$version$/$version$.json' file.
+Mapping txt is path to file or url of proguard's mapping txt file.  You can find it at `.minecraft/versions/$version$/$version$.json` file.
 
 ### Execute with version
 
