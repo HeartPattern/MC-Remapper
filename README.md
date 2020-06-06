@@ -85,7 +85,7 @@ You can use this option to map deobfuscated to. obfuscated code.
 ./MC-Remapper server.jar server_mapping.txt --output deobf.jar --thread 8 --fixlocalvar=delete --reobf
 ```
 
-##Execute by specifying version
+## Execute by specifying version
 
 ```
 ./MC-Remapper server 1.15.2
