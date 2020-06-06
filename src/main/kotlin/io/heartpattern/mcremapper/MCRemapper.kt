@@ -138,7 +138,7 @@ class MCRemapper(
             }?.url?.readText()
                 ?: throw IllegalArgumentException("$version does not provide mapping of $type")
 
-            val mapping = MappingsProguardParser.parse(rawMapping).apply { reverse(this) }
+            val mapping = MappingsProguardParser.parse(rawMapping).run { reverse(this) }
             val resolver = ClassVisitorSuperTypeResolver().apply { resolve(input) }
 
             val remapper = MCRemapper(mapping, resolver, fixLocalVar)
