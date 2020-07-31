@@ -2,8 +2,9 @@ package io.heartpattern.mcremapper.parser.proguard
 
 import io.heartpattern.mcremapper.model.ClassMapping
 import io.heartpattern.mcremapper.model.Mappings
+import io.heartpattern.mcremapper.parser.MappingsParser
 
-object MappingsProguardParser : ProguardParser<Mappings> {
+object MappingsProguardParser : MappingsParser {
     override fun parse(raw: String): Mappings {
         val lines = raw.lines()
 

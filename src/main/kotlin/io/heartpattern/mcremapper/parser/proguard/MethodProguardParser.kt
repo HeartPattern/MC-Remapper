@@ -4,11 +4,11 @@ import io.heartpattern.mcremapper.model.MethodMapping
 import io.heartpattern.mcremapper.model.MethodSignature
 import java.util.regex.Pattern
 
-object MethodProguardParser : ProguardParser<MethodMapping> {
+object MethodProguardParser {
     private val lineNumberMethodRegex = Pattern.compile("(\\d+):(\\d+):(\\S+) (\\S+)\\((\\S*)\\) -> (\\S+)")
     private val methodRegex = Pattern.compile("(\\S+) (\\S+)\\((\\S*)\\) -> (\\S+)")
 
-    override fun parse(raw: String): MethodMapping {
+    fun parse(raw: String): MethodMapping {
         return parseLineNumberMethod(raw)
             ?: parseMethod(raw)
             ?: throw IllegalArgumentException("Malformed method mapping: \"$raw\"")

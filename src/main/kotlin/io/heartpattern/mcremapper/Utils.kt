@@ -4,14 +4,16 @@ import java.io.File
 import java.net.URL
 
 /**
- * Convert internal class name to familiar class name, which simply replace '/' to ','
+ * Convert a binary name of a class or an interface in its internal form to the normal form. Simply replace '/' to '.'
+ * @see "Java Virtual Machine Specification §4.2.1"
  */
 fun String.fromInternal(): String {
     return replace('/', '.')
 }
 
 /**
- * Convert familiar class name to internal class name, which simply replace '.' to ','
+ * Convert a binary name of a class or an interface in its normal form to the internal form. Simply replace '.' to '/'
+ * @see "Java Virtual Machine Specification §4.2.1"
  */
 fun String.toInternal(): String {
     return replace('.', '/')

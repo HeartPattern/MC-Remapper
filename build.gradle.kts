@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("com.github.ajalt", "clikt", "2.1.0")
+    implementation("com.github.ajalt", "clikt", "2.8.0")
     implementation("org.ow2.asm", "asm", "8.0.1")
     implementation("org.ow2.asm", "asm-commons", "8.0.1")
     implementation("org.ow2.asm", "asm-tree", "8.0.1")

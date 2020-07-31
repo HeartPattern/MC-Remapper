@@ -6,10 +6,10 @@ import io.heartpattern.mcremapper.model.FieldMapping
 import io.heartpattern.mcremapper.model.MethodMapping
 import java.util.regex.Pattern
 
-object ClassProguardParser : ProguardParser<ClassMapping> {
+object ClassProguardParser {
     private val regex = Pattern.compile("(\\S+) -> (\\S+):")
 
-    override fun parse(raw: String): ClassMapping {
+    fun parse(raw: String): ClassMapping {
         val lines = raw.lines()
 
         val matcher = regex.matcher(raw)

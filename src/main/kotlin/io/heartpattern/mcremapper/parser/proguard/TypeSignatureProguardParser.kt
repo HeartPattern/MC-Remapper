@@ -2,8 +2,8 @@ package io.heartpattern.mcremapper.parser.proguard
 
 import io.heartpattern.mcremapper.model.TypeSignature
 
-object TypeSignatureProguardParser : ProguardParser<TypeSignature> {
-    override fun parse(raw: String): TypeSignature {
+object TypeSignatureProguardParser {
+    fun parse(raw: String): TypeSignature {
         return TypeSignature(when (raw) {
             "void" -> "V"
             "byte" -> "B"
