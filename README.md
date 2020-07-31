@@ -64,13 +64,36 @@ so some decompiler does not work. There are three options.
 
 __This option is useless for now. Both forge and bukkit modify nms with their own mapping, therefore applying this option is meaningless__
 
-Reobf option reverse mapping direction. 
+Reobf option reverses mapping direction. 
 By default, MC-Remapper map obfuscated code to deobfuscated code.
 However, if you write your mod/plugin with deobfuscated minecraft source and apply it to forge/bukkit, 
 minecraft will crash with NoClassDefFoundException, NoSuchMethodException, or else. 
 That's because, forge or bukkit use obfuscated code, but your plugin tried to access to deobfuscated code.
 In this case, you have to re-obfuscate your mod/plugin to use obfuscated minecraft code.
 You can use this option to map deobfuscated to. obfuscated code.
+
+For csrg mappings, this option is needed to apply deobfuscating mapping. i.e. deobfuscating = --reobf, reobfuscating = no --reobf.
+
+
+### --format (Default=proguard)
+
+Supported mapping format: proguard, csrg
+
+### --autologger (Flag, default=no)
+
+Static final fields with type org.apache.logging.log4j.Logger is automatically renamed to `LOGGER` if it is not explicitly renamed by the mapping.
+
+### --autotoken (Flag, default=no)
+
+Members' names that are Java keywords are automatically appended an underscore (_).
+
+### --mappackage (Map, default=None)
+
+Renames packages AFTER other mappings are applied. Can occur multiple times, where they are merged.
+
+Example: --mappackage =net.minecraft.server.v1_15 --mappackage net.minecraft.server=net.minecraft.server.v1_15
+
+The unnamed package is renamed to net.minecraft.server.v1_15, and net.minecraft.server is renamed to net.minecraft.server.v1_15.
 
 # Example usages
 
