@@ -25,7 +25,7 @@ data class ClassSignature(
  * Signature of field
  */
 data class FieldSignature(
-    val type: TypeSignature,
+    val type: TypeSignature?,
     override val name: String
 ) : Signature
 

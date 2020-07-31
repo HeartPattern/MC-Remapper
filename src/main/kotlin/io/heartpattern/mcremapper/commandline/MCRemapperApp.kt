@@ -4,16 +4,16 @@ package io.heartpattern.mcremapper.commandline
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.options.convert
-import com.github.ajalt.clikt.parameters.options.default
-import com.github.ajalt.clikt.parameters.options.flag
-import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.int
 import io.heartpattern.mcremapper.MCRemapper
 import io.heartpattern.mcremapper.download
 import io.heartpattern.mcremapper.model.LocalVariableFixType
+import io.heartpattern.mcremapper.model.PackageMapping
+import io.heartpattern.mcremapper.parser.MappingsParser
+import io.heartpattern.mcremapper.parser.csrg.MappingsCsrgParser
 import io.heartpattern.mcremapper.parser.proguard.MappingsProguardParser
 import io.heartpattern.mcremapper.resolver.ClassVisitorSuperTypeResolver
 import io.heartpattern.mcremapper.toInternal
@@ -40,7 +40,7 @@ class MCRemapperApp : CliktCommand() {
     private val arg1: String by argument()
 
     // Options
-    private val output: File by option().file(exists = false).default(File("deobfuscated.jar"))
+    private val output: File by option().file(mustExist = false).default(File("deobfuscated.jar"))
     private val reobf: Boolean by option().flag()
     private val thread: Int by option().int().default(8)
     private val fixlocalvar: LocalVariableFixType by option().choice("no", "rename", "delete").convert {
@@ -51,6 +51,16 @@ class MCRemapperApp : CliktCommand() {
             else -> error("") // Never happen
         }
     }.default(LocalVariableFixType.NO)
+    private val autologger: Boolean by option().flag()
+    private val autotoken: Boolean by option().flag()
+    private val mappackage: Map<String, String> by option().associate()
+    private val mappingsParser: MappingsParser by option("--format").choice("proguard", "csrg").convert {
+        when (it) {
+            "proguard" -> MappingsProguardParser
+            "csrg" -> MappingsCsrgParser
+            else -> error("")
+        }
+    }.default(MappingsProguardParser)
 
 
     private val versionInfo by lazy {
@@ -78,12 +88,12 @@ class MCRemapperApp : CliktCommand() {
                 ?: throw IllegalArgumentException("$arg0 does not provide server mapping")
             arg0 == "client" -> versionInfo.downloads.client_mappings?.url?.readText()
                 ?: throw IllegalArgumentException("$arg0 does not provide client mapping")
-            arg1.startsWith("http") -> URL(arg0).readText()
+            arg1.startsWith("http") -> URL(arg1).readText()
             else -> File(arg1).readText()
         }
 
         println("Parse mapping")
-        val originalMapping = MappingsProguardParser.parse(rawMapping)
+        val originalMapping = mappingsParser.parse(rawMapping)
         val mapping = if (reobf) originalMapping else originalMapping.reverse(originalMapping)
 
         println("Resolve super type")
@@ -101,9 +111,13 @@ class MCRemapperApp : CliktCommand() {
             .build()
 
         val applier = MCRemapper(
-            mapping,
+            mapping.copy(packageMapping = mappackage.asSequence().map { (original, mapped) ->
+                original to PackageMapping(original, mapped)
+            }.toMap()),
             superResolver,
-            fixlocalvar
+            fixlocalvar,
+            autologger,
+            autotoken
         )
 
         output.delete()

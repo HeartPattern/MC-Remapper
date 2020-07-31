@@ -4,10 +4,10 @@ import io.heartpattern.mcremapper.model.FieldMapping
 import io.heartpattern.mcremapper.model.FieldSignature
 import java.util.regex.Pattern
 
-object FieldProguardParser : ProguardParser<FieldMapping> {
+object FieldProguardParser {
     private val regex = Pattern.compile("(\\S+) (\\S+) -> (\\S+)")
 
-    override fun parse(raw: String): FieldMapping {
+    fun parse(raw: String): FieldMapping {
         val matcher = regex.matcher(raw)
         matcher.find()
         return FieldMapping(

@@ -6,7 +6,7 @@ import io.heartpattern.mcremapper.model.Mappings
 import io.heartpattern.mcremapper.parser.proguard.MappingsProguardParser
 import io.heartpattern.mcremapper.resolver.ClassVisitorSuperTypeResolver
 import io.heartpattern.mcremapper.resolver.SuperTypeResolver
-import io.heartpattern.mcremapper.visitor.InnerClassRemapper
+import io.heartpattern.mcremapper.visitor.EnhancedClassRemapper
 import io.heartpattern.mcremapper.visitor.LocalVariableFixVisitor
 import io.heartpattern.mcremapper.visitor.MappingRemapper
 import io.heartpattern.mcremapper.visitor.ParameterAnnotationFixVisitor
@@ -29,7 +29,9 @@ import java.util.zip.ZipOutputStream
 class MCRemapper(
     private val mapping: Mappings,
     private val superResolver: SuperTypeResolver,
-    private val fixType: LocalVariableFixType
+    private val fixType: LocalVariableFixType,
+    private val autoLogger: Boolean = false,
+    private val autoToken: Boolean = false
 ) {
     /**
      * Apply mapping to given [byteArray] of bytecode
@@ -48,14 +50,14 @@ class MCRemapper(
      */
     fun applyMapping(reader: ClassReader): ClassNode {
         val node = ClassNode()
-        val visitor = InnerClassRemapper(
+        val visitor = EnhancedClassRemapper(
             LocalVariableFixVisitor(
                 ParameterAnnotationFixVisitor(
                     node
                 ),
                 fixType
             ),
-            MappingRemapper(mapping, superResolver)
+            MappingRemapper(mapping, superResolver, autoLogger, autoToken)
         )
 
         reader.accept(visitor, ClassReader.EXPAND_FRAMES)
