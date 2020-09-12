@@ -1,14 +1,33 @@
 package io.heartpattern.mcremapper.model
 
-fun TypeSignature.reverse(mappings: Mappings): TypeSignature {
-    fun reverseTypeSignature(mappings: Mappings, raw: String): String {
-        return when (raw[0]) {
-            'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z', 'V' -> raw
-            '[' -> '[' + reverseTypeSignature(mappings, raw.substring(1))
-            'L' -> 'L' + mappings.mapClassName(raw.substring(1, raw.length - 1)) + ';'
-            else -> error("Illegal type signature: $raw")
-        }
-    }
+import org.objectweb.asm.Type
 
-    return TypeSignature(reverseTypeSignature(mappings, name))
+fun <T> Map<T, T>.getOrKey(key: T): T =
+    getOrDefault(key, key)
+
+data class FieldRef(
+    val owner: String,
+    val type: String?,
+    val name: String
+)
+
+data class MethodRef(
+    val owner: String,
+    val descriptor: String,
+    val name: String
+)
+
+data class ParsedMethodDescriptor(
+    val returnType: String,
+    val parameters: List<String>
+) {
+    constructor(s: String) : this(Type.getReturnType(s).descriptor, Type.getArgumentTypes(s).map { it.descriptor })
+
+    override fun toString(): String =
+        "(${parameters.joinToString(separator = "") { it }})${returnType}"
 }
+
+data class MemberMappingValue(
+    val mapped: String,
+    val inheritable: Boolean = true
+)

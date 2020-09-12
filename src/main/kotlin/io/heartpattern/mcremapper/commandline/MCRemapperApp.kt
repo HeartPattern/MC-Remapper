@@ -11,11 +11,13 @@ import com.github.ajalt.clikt.parameters.types.int
 import io.heartpattern.mcremapper.MCRemapper
 import io.heartpattern.mcremapper.download
 import io.heartpattern.mcremapper.model.LocalVariableFixType
-import io.heartpattern.mcremapper.model.PackageMapping
-import io.heartpattern.mcremapper.parser.MappingsParser
-import io.heartpattern.mcremapper.parser.csrg.MappingsCsrgParser
-import io.heartpattern.mcremapper.parser.proguard.MappingsProguardParser
-import io.heartpattern.mcremapper.resolver.ClassVisitorSuperTypeResolver
+import io.heartpattern.mcremapper.parser.MappingParser
+import io.heartpattern.mcremapper.parser.csrg.MappingCsrgParser
+import io.heartpattern.mcremapper.parser.proguard.MappingProguardParser
+import io.heartpattern.mcremapper.preprocess.AutoLoggerPreprocessor
+import io.heartpattern.mcremapper.preprocess.AutoTokenPreprocessor
+import io.heartpattern.mcremapper.preprocess.InheritabilityPreprocessor
+import io.heartpattern.mcremapper.preprocess.SuperTypeResolver
 import io.heartpattern.mcremapper.toInternal
 import kr.heartpattern.mcversions.MCVersions
 import me.tongfei.progressbar.ProgressBarBuilder
@@ -54,13 +56,13 @@ class MCRemapperApp : CliktCommand() {
     private val autologger: Boolean by option().flag()
     private val autotoken: Boolean by option().flag()
     private val mappackage: Map<String, String> by option().associate()
-    private val mappingsParser: MappingsParser by option("--format").choice("proguard", "csrg").convert {
+    private val mappingParser: MappingParser by option("--format").choice("proguard", "csrg").convert {
         when (it) {
-            "proguard" -> MappingsProguardParser
-            "csrg" -> MappingsCsrgParser
+            "proguard" -> MappingProguardParser
+            "csrg" -> MappingCsrgParser
             else -> error("")
         }
-    }.default(MappingsProguardParser)
+    }.default(MappingProguardParser)
 
 
     private val versionInfo by lazy {
@@ -93,12 +95,27 @@ class MCRemapperApp : CliktCommand() {
         }
 
         println("Parse mapping")
-        val originalMapping = mappingsParser.parse(rawMapping)
-        val mapping = if (reobf) originalMapping else originalMapping.reverse(originalMapping)
+        val originalMapping = mappingParser.parse(rawMapping)
+        var mapping = if (reobf) originalMapping else originalMapping.reversed()
+        mapping = mapping.copy(packageMapping=mapping.packageMapping + mappackage.asSequence().map { (original, mapped) ->
+            original.toInternal() to mapped.toInternal()
+        }.toMap())
 
         println("Resolve super type")
-        val superResolver = ClassVisitorSuperTypeResolver()
-        superResolver.resolve(input)
+        val superResolver = SuperTypeResolver.fromFile(input)
+
+        if (autologger) {
+            println("Preprocess auto logger")
+            mapping = AutoLoggerPreprocessor.preprocess(mapping, input, superResolver)
+        }
+
+        if (autotoken) {
+            println("Preprocess auto token")
+            mapping = AutoTokenPreprocessor.preprocess(mapping, input, superResolver)
+        }
+
+        println("Preprocess inheritability")
+        mapping = InheritabilityPreprocessor.preprocess(mapping, input)
 
         println("Start mapping")
         val mappingExecutor = Executors.newFixedThreadPool(thread)
@@ -111,13 +128,9 @@ class MCRemapperApp : CliktCommand() {
             .build()
 
         val applier = MCRemapper(
-            mapping.copy(packageMapping = mappackage.asSequence().map { (original, mapped) ->
-                original to PackageMapping(original, mapped)
-            }.toMap()),
+            mapping,
             superResolver,
-            fixlocalvar,
-            autologger,
-            autotoken
+            fixlocalvar
         )
 
         output.delete()

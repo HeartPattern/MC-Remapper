@@ -1,24 +1,20 @@
 package io.heartpattern.mcremapper.visitor
 
-import io.heartpattern.mcremapper.JavaTokens
-import io.heartpattern.mcremapper.fromInternal
-import io.heartpattern.mcremapper.model.Mappings
-import io.heartpattern.mcremapper.resolver.SuperTypeResolver
-import io.heartpattern.mcremapper.toInternal
+import io.heartpattern.mcremapper.model.FieldRef
+import io.heartpattern.mcremapper.model.Mapping
+import io.heartpattern.mcremapper.model.MethodRef
+import io.heartpattern.mcremapper.model.getOrKey
+import io.heartpattern.mcremapper.preprocess.SuperTypeResolver
 import org.objectweb.asm.commons.Remapper
-import java.lang.reflect.Modifier
 
 /**
  * Apply given [mapping]
  */
 class MappingRemapper(
-    private val mapping: Mappings,
-    private val superResolver: SuperTypeResolver,
-    private val autoLogger: Boolean = false,
-    private val autoToken: Boolean = false
+    private val mapping: Mapping,
+    private val superResolver: SuperTypeResolver
 ) : Remapper() {
-    override fun map(nameInternal: String): String {
-        val name = nameInternal.fromInternal()
+    override fun map(name: String): String {
         val mappedName = (name.length downTo 0).asSequence()
             .filter { index -> index == name.length || name[index] == '$'}
             .firstOrNull { suffixStart ->
@@ -27,55 +23,43 @@ class MappingRemapper(
             }?.let { suffixStart ->
                 val prefix = name.substring(0, suffixStart)
                 val suffix = name.substring(suffixStart)
-                mapping.classMapping.getValue(prefix).mapped + suffix
+                mapping.classMapping.getOrKey(prefix) + suffix
             } ?: name
 
-        val packageName = if ('.' in mappedName) mappedName.substring(0, mappedName.lastIndexOf('.')) else ""
+        val packageName = if ('/' in mappedName) mappedName.substring(0, mappedName.lastIndexOf('/')) else ""
         return (if (packageName in mapping.packageMapping) {
-            mapping.packageMapping.getValue(packageName).mapped.let { mapped -> if (mapped.isNotEmpty()) "$mapped." else ""} + mappedName.substring(if (packageName.isNotEmpty()) packageName.length + 1 else 0)
+            mapping.packageMapping.getValue(packageName).let { mapped -> if (mapped.isNotEmpty()) "$mapped/" else ""} + mappedName.substring(if (packageName.isNotEmpty()) packageName.length + 1 else 0)
         } else {
             mappedName
-        }).toInternal()
+        })
     }
 
-    fun mapFieldName(ownerInternal: String, name: String, descriptorInternal: String, access: Int): String {
-        val owner = ownerInternal.fromInternal()
-        val descriptor = descriptorInternal.fromInternal()
-
-        for (superName in superResolver.getAllSuperClass(owner)) {
-            val superMapping = mapping.classMapping[superName] ?: continue
-            for (field in superMapping.fields) {
-                if ((field.original.type == null || field.original.type.name == descriptor) && field.original.name == name) {
-                    return field.mapped
-                }
+    override fun mapFieldName(owner: String, name: String, descriptor: String): String {
+        for (superName in superResolver.iterateSuperNames(owner)) {
+            val ref = FieldRef(superName, descriptor, name)
+            val mappingValue = mapping.fieldMapping[ref]
+            if (mappingValue != null && (superName == owner || mappingValue.inheritable)) {
+                return mappingValue.mapped
+            }
+            val refWithoutType = FieldRef(superName, null, name)
+            val mappedWithoutType = mapping.fieldMapping[refWithoutType]
+            if (mappedWithoutType != null && (superName == owner || mappedWithoutType.inheritable)) {
+                return mappedWithoutType.mapped
             }
         }
 
-        if (autoLogger && Modifier.isStatic(access) && Modifier.isFinal(access) && descriptor == "Lorg.apache.logging.log4j.Logger;") {
-            return "LOGGER"
-        }
-        if (autoToken) {
-            JavaTokens.appendIfToken(name)?.let { return it }
-        }
         return name
     }
 
-    override fun mapMethodName(ownerInternal: String, name: String, descriptorInternal: String): String {
-        val owner = ownerInternal.fromInternal()
-        val descriptor = descriptorInternal.fromInternal()
-
-        for (superName in superResolver.getAllSuperClass(owner)) {
-            val superMapping = mapping.classMapping[superName] ?: continue
-            for (method in superMapping.methods) {
-                if (method.original.methodDescriptor == descriptor && method.original.name == name) {
-                    return method.mapped
-                }
+    override fun mapMethodName(owner: String, name: String, descriptor: String): String {
+        for (superName in superResolver.iterateSuperNames(owner)) {
+            val ref = MethodRef(superName, descriptor, name)
+            val mappingValue = mapping.methodMapping[ref]
+            if (mappingValue != null && (superName == owner || mappingValue.inheritable)) {
+                return mappingValue.mapped
             }
         }
 
-        if (autoToken) {
-            JavaTokens.appendIfToken(name)?.let { return it }
-        }
         return name
     }
 }

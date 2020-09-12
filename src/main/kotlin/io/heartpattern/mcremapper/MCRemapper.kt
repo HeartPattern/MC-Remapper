@@ -2,17 +2,16 @@ package io.heartpattern.mcremapper
 
 import io.heartpattern.mcremapper.model.ArtifactType
 import io.heartpattern.mcremapper.model.LocalVariableFixType
-import io.heartpattern.mcremapper.model.Mappings
-import io.heartpattern.mcremapper.parser.proguard.MappingsProguardParser
-import io.heartpattern.mcremapper.resolver.ClassVisitorSuperTypeResolver
-import io.heartpattern.mcremapper.resolver.SuperTypeResolver
-import io.heartpattern.mcremapper.visitor.EnhancedClassRemapper
+import io.heartpattern.mcremapper.model.Mapping
+import io.heartpattern.mcremapper.parser.proguard.MappingProguardParser
+import io.heartpattern.mcremapper.preprocess.SuperTypeResolver
 import io.heartpattern.mcremapper.visitor.LocalVariableFixVisitor
 import io.heartpattern.mcremapper.visitor.MappingRemapper
 import io.heartpattern.mcremapper.visitor.ParameterAnnotationFixVisitor
 import kr.heartpattern.mcversions.MCVersions
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.commons.ClassRemapper
 import org.objectweb.asm.tree.ClassNode
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -27,12 +26,11 @@ import java.util.zip.ZipOutputStream
  * Utility class for applying mapping
  */
 class MCRemapper(
-    private val mapping: Mappings,
+    private val mapping: Mapping,
     private val superResolver: SuperTypeResolver,
-    private val fixType: LocalVariableFixType,
-    private val autoLogger: Boolean = false,
-    private val autoToken: Boolean = false
+    private val fixType: LocalVariableFixType
 ) {
+
     /**
      * Apply mapping to given [byteArray] of bytecode
      */
@@ -50,17 +48,17 @@ class MCRemapper(
      */
     fun applyMapping(reader: ClassReader): ClassNode {
         val node = ClassNode()
-        val visitor = EnhancedClassRemapper(
+        val visitor = ClassRemapper(
             LocalVariableFixVisitor(
                 ParameterAnnotationFixVisitor(
                     node
                 ),
                 fixType
             ),
-            MappingRemapper(mapping, superResolver, autoLogger, autoToken)
+            MappingRemapper(mapping, superResolver)
         )
 
-        reader.accept(visitor, ClassReader.EXPAND_FRAMES)
+        reader.accept(visitor, 0)
         return node
     }
 
@@ -125,7 +123,7 @@ class MCRemapper(
             val versionList = client.requestVersionSetAsync().get()
             val versionInfo = client.requestVersionAsync(
                 versionList.versions.find { it.id == version }
-                    ?: throw IllegalArgumentException("$version does not exists")
+                        ?: throw IllegalArgumentException("$version does not exists")
             ).get()
 
             val input = when (type) {
@@ -140,8 +138,8 @@ class MCRemapper(
             }?.url?.readText()
                 ?: throw IllegalArgumentException("$version does not provide mapping of $type")
 
-            val mapping = MappingsProguardParser.parse(rawMapping).run { reverse(this) }
-            val resolver = ClassVisitorSuperTypeResolver().apply { resolve(input) }
+            val mapping = MappingProguardParser.parse(rawMapping).reversed()
+            val resolver = SuperTypeResolver.fromFile(input)
 
             val remapper = MCRemapper(mapping, resolver, fixLocalVar)
 
