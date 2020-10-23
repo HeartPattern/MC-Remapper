@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.heartpattern"
-version = "2.0.2-SNAPSHOT"
+version = "2.0.3-SNAPSHOT"
 
 repositories {
     maven("https://maven.heartpattern.io/repository/maven-public/")
@@ -18,7 +18,7 @@ dependencies {
     implementation("org.ow2.asm", "asm-commons", "8.0.1")
     implementation("org.ow2.asm", "asm-tree", "8.0.1")
     implementation("me.tongfei", "progressbar", "0.8.1")
-    implementation("kr.heartpattern","MCVersions","1.0.0-SNAPSHOT")
+    implementation("io.heartpattern","MCVersions","1.0.0-SNAPSHOT")
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))

@@ -8,7 +8,7 @@ import io.heartpattern.mcremapper.preprocess.SuperTypeResolver
 import io.heartpattern.mcremapper.visitor.LocalVariableFixVisitor
 import io.heartpattern.mcremapper.visitor.MappingRemapper
 import io.heartpattern.mcremapper.visitor.ParameterAnnotationFixVisitor
-import kr.heartpattern.mcversions.MCVersions
+import io.heartpattern.mcversions.MCVersions
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.commons.ClassRemapper

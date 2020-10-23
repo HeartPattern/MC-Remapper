@@ -19,7 +19,7 @@ import io.heartpattern.mcremapper.preprocess.AutoTokenPreprocessor
 import io.heartpattern.mcremapper.preprocess.InheritabilityPreprocessor
 import io.heartpattern.mcremapper.preprocess.SuperTypeResolver
 import io.heartpattern.mcremapper.toInternal
-import kr.heartpattern.mcversions.MCVersions
+import io.heartpattern.mcversions.MCVersions
 import me.tongfei.progressbar.ProgressBarBuilder
 import me.tongfei.progressbar.ProgressBarStyle
 import org.objectweb.asm.ClassReader
