@@ -41,7 +41,7 @@ Version id is release version or snapshot version.
 
 ## Options
 
-### --output (Default=deobfuscated.jar)
+### --output (Default=Generate from other arguments)
 
 Path to output file. If file already exists, overwrite it.
 
