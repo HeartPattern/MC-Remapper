@@ -1,14 +1,14 @@
 plugins {
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.32"
     application
     `maven-publish`
 }
 
 group = "io.heartpattern"
-version = "2.0.3-SNAPSHOT"
+version = "2.0.4-SNAPSHOT"
 
 repositories {
-    maven("https://maven.heartpattern.io/repository/maven-public/")
+    maven("https://repo.heartpattern.io/repository/maven-public/")
 }
 
 dependencies {
@@ -18,7 +18,7 @@ dependencies {
     implementation("org.ow2.asm", "asm-commons", "8.0.1")
     implementation("org.ow2.asm", "asm-tree", "8.0.1")
     implementation("me.tongfei", "progressbar", "0.8.1")
-    implementation("io.heartpattern","MCVersions","1.0.0-SNAPSHOT")
+    implementation("io.heartpattern","mcversions","1.0.3-SNAPSHOT")
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
@@ -48,9 +48,9 @@ if("maven.username" in properties && "maven.password" in properties){
         repositories{
             maven(
                 if(version.toString().endsWith("SNAPSHOT"))
-                    "https://maven.heartpattern.io/repository/maven-public-snapshots/"
+                    "https://repo.heartpattern.io/repository/maven-public-snapshots/"
                 else
-                    "https://maven.heartpattern.io/repository/maven-public-releases/"
+                    "https://repo.heartpattern.io/repository/maven-public-releases/"
             ){
                 credentials{
                     username = properties["maven.username"].toString()
