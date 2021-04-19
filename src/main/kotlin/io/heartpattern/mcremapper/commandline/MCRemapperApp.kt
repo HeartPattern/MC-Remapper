@@ -13,6 +13,7 @@ import io.heartpattern.mcremapper.model.LocalVariableFixType
 import io.heartpattern.mcremapper.parser.MappingParser
 import io.heartpattern.mcremapper.parser.csrg.MappingCsrgParser
 import io.heartpattern.mcremapper.parser.proguard.MappingProguardParser
+import io.heartpattern.mcremapper.parser.srg.MappingSrgParser
 import io.heartpattern.mcremapper.preprocess.AutoLoggerPreprocessor
 import io.heartpattern.mcremapper.preprocess.AutoTokenPreprocessor
 import io.heartpattern.mcremapper.preprocess.InheritabilityPreprocessor
@@ -55,10 +56,11 @@ class MCRemapperApp : CliktCommand() {
     private val autologger: Boolean by option().flag()
     private val autotoken: Boolean by option().flag()
     private val mappackage: Map<String, String> by option().associate()
-    private val mappingParser: MappingParser by option("--format").choice("proguard", "csrg").convert {
+    private val mappingParser: MappingParser by option("--format").choice("proguard", "csrg", "srg").convert {
         when (it) {
             "proguard" -> MappingProguardParser
             "csrg" -> MappingCsrgParser
+            "srg" -> MappingSrgParser
             else -> error("")
         }
     }.default(MappingProguardParser)
