@@ -14,7 +14,7 @@ import org.objectweb.asm.tree.MethodNode
  *
  * Originally written by Pokechu22 for MCP, translated to Kotlin for MC-Remapper by pdinklag.
  */
-class ParameterAnnotationFixVisitor(cv: ClassNode) : ClassVisitor(Opcodes.ASM6, cv) {
+class ParameterAnnotationFixVisitor(cv: ClassNode) : ClassVisitor(Opcodes.ASM9, cv) {
     override fun visitEnd() {
         super.visitEnd()
 

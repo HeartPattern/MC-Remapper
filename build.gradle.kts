@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.heartpattern"
-version = "2.0.5-SNAPSHOT"
+version = "2.0.6-SNAPSHOT"
 
 repositories {
     maven("https://repo.heartpattern.io/repository/maven-public/")
@@ -14,9 +14,9 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.github.ajalt.clikt", "clikt", "3.0.1")
-    implementation("org.ow2.asm", "asm", "8.0.1")
-    implementation("org.ow2.asm", "asm-commons", "8.0.1")
-    implementation("org.ow2.asm", "asm-tree", "8.0.1")
+    implementation("org.ow2.asm", "asm", "9.1")
+    implementation("org.ow2.asm", "asm-commons", "9.1")
+    implementation("org.ow2.asm", "asm-tree", "9.1")
     implementation("me.tongfei", "progressbar", "0.8.1")
     implementation("io.heartpattern","mcversions","1.0.3-SNAPSHOT")
 

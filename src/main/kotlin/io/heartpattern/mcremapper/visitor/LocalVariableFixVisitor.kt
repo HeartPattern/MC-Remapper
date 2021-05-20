@@ -13,7 +13,7 @@ import org.objectweb.asm.Opcodes
 class LocalVariableFixVisitor(
     cv: ClassVisitor,
     val type: LocalVariableFixType
-) : ClassVisitor(Opcodes.ASM8, cv) {
+) : ClassVisitor(Opcodes.ASM9, cv) {
     override fun visitMethod(
         access: Int,
         name: String?,
@@ -23,7 +23,7 @@ class LocalVariableFixVisitor(
     ): MethodVisitor {
         val methodVisitor = super.visitMethod(access, name, descriptor, signature, exceptions)
 
-        return object : MethodVisitor(Opcodes.ASM8, methodVisitor) {
+        return object : MethodVisitor(Opcodes.ASM9, methodVisitor) {
             override fun visitLocalVariable(
                 name: String?,
                 descriptor: String?,

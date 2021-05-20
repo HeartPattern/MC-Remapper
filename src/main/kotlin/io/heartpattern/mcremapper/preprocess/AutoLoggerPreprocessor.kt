@@ -26,7 +26,7 @@ object AutoLoggerPreprocessor {
             if (!entry.name.endsWith(".class")) continue
             zipFile.getInputStream(entry).use {
                 ClassReader(it)
-            }.accept(object : ClassVisitor(Opcodes.ASM8) {
+            }.accept(object : ClassVisitor(Opcodes.ASM9) {
                 var className: String? = null
 
                 override fun visit(

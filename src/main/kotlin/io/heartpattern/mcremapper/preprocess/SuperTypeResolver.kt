@@ -24,7 +24,7 @@ class SuperTypeResolver(private val directSuperNames: Map<String, List<String>>)
                 if (!entry.name.endsWith(".class")) continue
                 zipFile.getInputStream(entry).use {
                     ClassReader(it)
-                }.accept(object : ClassVisitor(Opcodes.ASM8) {
+                }.accept(object : ClassVisitor(Opcodes.ASM9) {
                     override fun visit(
                         version: Int,
                         access: Int,
