@@ -42,7 +42,7 @@ class MCRemapperApp : CliktCommand() {
     private val arg1: String by argument()
 
     // Options
-    private val outputName: String? by option()
+    private val outputName: String? by option("--output", "--output-name")
     private val reobf: Boolean by option().flag()
     private val thread: Int by option().int().default(8)
     private val fixlocalvar: LocalVariableFixType by option().choice("no", "rename", "delete").convert {
