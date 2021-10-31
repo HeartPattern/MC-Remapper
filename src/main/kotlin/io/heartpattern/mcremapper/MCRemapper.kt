@@ -19,7 +19,7 @@ import java.io.FileOutputStream
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
+import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 
 /**
@@ -76,11 +76,13 @@ class MCRemapper(
         output.delete()
         output.createNewFile()
 
-        val zipInput = ZipFile(input)
+        val zipInput = ZipInputStream(input.getMinecraftSourceZipInputStream())
         val zipOutput = ZipOutputStream(FileOutputStream(output))
 
-        for (entry in zipInput.entries()) {
-            val bytes = zipInput.getInputStream(entry).readBytes()
+        while(true) {
+            val entry = zipInput.nextEntry ?: break
+
+            val bytes = zipInput.readBytes()
             if (entry.name.endsWith(".class")) {
                 mappingExecutor.execute {
                     val reader = ClassReader(bytes)

@@ -9,6 +9,7 @@ import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.int
 import io.heartpattern.mcremapper.MCRemapper
 import io.heartpattern.mcremapper.download
+import io.heartpattern.mcremapper.getMinecraftSourceZipInputStream
 import io.heartpattern.mcremapper.model.LocalVariableFixType
 import io.heartpattern.mcremapper.parser.MappingParser
 import io.heartpattern.mcremapper.parser.csrg.MappingCsrgParser
@@ -32,6 +33,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
+import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 
 class MCRemapperApp : CliktCommand() {
@@ -144,12 +146,13 @@ class MCRemapperApp : CliktCommand() {
 
         output.delete()
 
-        val zipInput = ZipFile(input)
+        val zipInput = ZipInputStream(input.getMinecraftSourceZipInputStream())
         val zipOutput = ZipOutputStream(FileOutputStream(output))
 
-        for (entry in zipInput.entries()) {
+        while(true) {
+            val entry = zipInput.nextEntry ?: break
             progress.maxHint(progress.max + 1)
-            val bytes = zipInput.getInputStream(entry).readBytes()
+            val bytes = zipInput.readBytes()
             if (entry.name.endsWith(".class")) {
                 mappingExecutor.execute {
                     val reader = ClassReader(bytes)

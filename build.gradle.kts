@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.heartpattern"
-version = "2.0.6-SNAPSHOT"
+version = "2.0.7-SNAPSHOT"
 
 repositories {
     maven("https://repo.heartpattern.io/repository/maven-public/")
