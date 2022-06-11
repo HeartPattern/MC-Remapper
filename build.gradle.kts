@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.5.31"
+    kotlin("jvm") version "1.7.0"
     application
     `maven-publish`
 }
@@ -14,11 +14,12 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("com.github.ajalt.clikt", "clikt", "3.0.1")
-    implementation("org.ow2.asm", "asm", "9.1")
-    implementation("org.ow2.asm", "asm-commons", "9.1")
-    implementation("org.ow2.asm", "asm-tree", "9.1")
-    implementation("me.tongfei", "progressbar", "0.8.1")
+    implementation("org.ow2.asm", "asm", "9.3")
+    implementation("org.ow2.asm", "asm-commons", "9.3")
+    implementation("org.ow2.asm", "asm-tree", "9.3")
+    implementation("me.tongfei", "progressbar", "0.9.3")
     implementation("io.heartpattern","mcversions","1.0.3-SNAPSHOT")
+
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
@@ -32,7 +33,7 @@ tasks {
     compileKotlin {
         kotlinOptions {
             freeCompilerArgs = listOf("-progressive")
-            jvmTarget = "1.8"
+            jvmTarget = "17"
         }
     }
 
