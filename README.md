@@ -8,7 +8,7 @@ This program applies mapping file to original minecraft code. It does not decomp
 but only apply mapping. You have to decompile jar with your favorite decompiler after deobfuscate minecraft with mc-remapper.
 
 # Compile
-Java 11 is required to compile MC-Remapper.\
+Java 17 is required to compile MC-Remapper.\
 Clone project to your local machine and open terminal in the directory where build.gradle located.
 Run following command to compile.
 
