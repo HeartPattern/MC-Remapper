@@ -33,7 +33,6 @@ tasks {
     compileKotlin {
         kotlinOptions {
             freeCompilerArgs = listOf("-progressive")
-            jvmTarget = "20"
         }
     }
 
